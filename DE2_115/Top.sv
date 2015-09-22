@@ -10,16 +10,15 @@ module Top(
  *================================================================*/
 //input rst_n;
 
-parameter CNT_MAX = 6'b111111;
+//parameter CNT_MAX = 6'b111111;
 parameter IDLE    = 6'b000001;
-parameter FINISH  = 6'b000110;
+parameter FINISH  = 6'b001010;
 
 
 /*================================================================*
  * REG/WIRE declarations
  *================================================================*/
 reg [5:0] cur_peak_cnt;
-//reg [5:0] next_peak_cnt;
 reg [5:0] cur_state;
 reg [5:0] next_state;
 reg active;
@@ -41,9 +40,9 @@ always @(*)begin
 		cur_state = IDLE;
 	end else begin
 		if (cur_state == FINISH)begin
-			active = next_active;
+			next_active = active;
 			cur_state = IDLE;
-		end else
+		end else begin
 			if (cur_peak_cnt == (2 << cur_state))begin
 				cur_state = next_state;
 			end
@@ -57,7 +56,7 @@ always @(posedge i_clk) begin
 	//if (cur_state)
 	if(active != next_active)begin //active
 		cur_peak_cnt <= cur_peak_cnt + 1;
-	end else //non-active
+	end else begin//non-active
 		cur_peak_cnt <= 6'b000001;
 	end
 end
