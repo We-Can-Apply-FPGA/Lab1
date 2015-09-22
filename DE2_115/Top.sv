@@ -10,17 +10,20 @@ module Top(
  *================================================================*/
 //input rst_n;
 
-parameter IDLE   = 6'b000000;
-parameter START  = 6'b000001;
-parameter FINISH = 6'b000110;
+parameter CNT_MAX = 6'b111111;
+parameter IDLE    = 6'b000001;
+parameter FINISH  = 6'b000110;
+
 
 /*================================================================*
  * REG/WIRE declarations
  *================================================================*/
-reg [6:0] cur_peak_cnt;
-reg [6:0] next_peak_cnt;
-reg [6:0] cur_state;
-reg [6:0] next_state;
+reg [5:0] cur_peak_cnt;
+//reg [5:0] next_peak_cnt;
+reg [5:0] cur_state;
+reg [5:0] next_state;
+reg active;
+reg next_active;
 
 /*================================================================*
  * Module
@@ -31,25 +34,37 @@ reg [6:0] next_state;
  *================================================================*/
 //next state logic
 always @(*)begin
-	cur_peak_cnt = next_peak_cnt;
-	cur_state   = next_state;
-	if ((cur_peak_cnt == (2 << cur_state)) && (cur_state != FINISH ))
-		next_state = cur_state + 1;
+	//cur_peak_cnt = next_peak_cnt;
+	//cur_state   = next_state;
+	//
+	if (active == next_active)begin //non-active
+		cur_state = IDLE;
+	end else begin
+		if (cur_state == FINISH)begin
+			active = next_active;
+			cur_state = IDLE;
+		end else
+			if (cur_peak_cnt == (2 << cur_state))begin
+				cur_state = next_state;
+			end
+		end
+	end
 end
 /*=============== =================================================*
  * Sequential circuit
  *================================================================*/
 always @(posedge i_clk) begin
-	if(cur_state != IDLE)
-		next_peak_cnt <= cur_peak_cnt + 1;
-	else
-		next_peak_cnt <= 6'b000001;
-
+	//if (cur_state)
+	if(active != next_active)begin //active
+		cur_peak_cnt <= cur_peak_cnt + 1;
+	end else //non-active
+		cur_peak_cnt <= 6'b000001;
+	end
 end
 
 //Means the user press the button
 always @(posedge i_start) begin
-    next_state    <= START;
+    active <= ~next_active; //inverse to activate
 end
 /*================================================================*
  * Output circuit
