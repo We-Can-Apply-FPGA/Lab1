@@ -136,7 +136,7 @@ module DE2_115(
 	inout [6:0] EX_IO
 );
 	logic keydown;
-	logic [3:0] random_value;
+	logic [6:0] random_value;
 	Debounce deb0(
 		.i_in(KEY[0]),
 		.i_clk(CLOCK_50),
@@ -145,6 +145,7 @@ module DE2_115(
 	Top top0(
 		.i_clk(CLOCK_50),
 		.i_start(keydown),
+		.i_sw(SW),
 		.o_random_out(random_value)
 	);
 	SevenHexDecoder seven_dec0(

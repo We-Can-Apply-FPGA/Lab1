@@ -6,7 +6,7 @@ module Top(
 	output [6:0] o_random_out
 );
 
-/*== ==============================================================*
+/*================================================================*
  * PARAMETER declarations
  *================================================================*/
 	parameter SHOW_NUM = 15;
@@ -33,9 +33,7 @@ module Top(
 			if (run_num < SHOW_NUM) begin
 				if (counter < delay) begin
 					counter <= counter + 1;
-					if (counter_total == '1) counter_total <= 0;
-					else counter_total <= counter_total + 1;
-
+					counter_total <= counter_total + 1;
 				end
 				else begin
 					rdm <= (22695477 * counter_total + 1) % '1;
@@ -75,11 +73,12 @@ module Top(
 		if (sw == 1) begin
 			if (run_num == SHOW_NUM && i_sw[17])
 				o_random_out = i_sw[16:10];
-			else
-				if (i_sw == 0)
+			else begin
+				if(i_sw == 0)
 					o_random_out = rdm % 99 + 1;
-				else
+				else 
 					o_random_out = (rdm % i_sw[6:0]) + 1;
+			end
 		end
 		else begin
 			o_random_out = 0;
