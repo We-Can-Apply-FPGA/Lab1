@@ -1,5 +1,6 @@
 module SevenHexDecoder(
 	input [6:0] i_hex,
+	output logic [6:0] o_seven_hun,
 	output logic [6:0] o_seven_ten,
 	output logic [6:0] o_seven_one
 );
@@ -20,25 +21,43 @@ module SevenHexDecoder(
 	parameter D7 = 7'b1011000;
 	parameter D8 = 7'b0000000;
 	parameter D9 = 7'b0010000;
+	parameter DX = 7'b1111111;
 	
 	always_comb begin
-	
-		case(i_hex / 10)
-			0: o_seven_ten = D0;
-			1: o_seven_ten = D1;
-			2: o_seven_ten = D2;
-			3: o_seven_ten = D3;
-			4: o_seven_ten = D4;
-			5: o_seven_ten = D5;
-			6: o_seven_ten = D6;
-			7: o_seven_ten = D7;
-			8: o_seven_ten = D8;
-			9: o_seven_ten = D9;
-			10: o_seven_ten = D0;
-			11: o_seven_ten = D1;
-			12: o_seven_ten = D2;
-			default: o_seven_ten = D0;
-		endcase
+
+		if (i_hex >= 100) begin
+			case(i_hex / 100)
+				0: o_seven_hun = D0;
+				1: o_seven_hun = D1;
+				2: o_seven_hun = D2;
+				3: o_seven_hun = D3;
+				4: o_seven_hun = D4;
+				5: o_seven_hun = D5;
+				6: o_seven_hun = D6;
+				7: o_seven_hun = D7;
+				8: o_seven_hun = D8;
+				9: o_seven_hun = D9;
+				default: o_seven_hun = DX;
+			endcase
+		end
+		else o_seven_hun = DX;
+
+		if (i_hex >= 10) begin
+			case(i_hex / 10 % 10)
+				0: o_seven_ten = D0;
+				1: o_seven_ten = D1;
+				2: o_seven_ten = D2;
+				3: o_seven_ten = D3;
+				4: o_seven_ten = D4;
+				5: o_seven_ten = D5;
+				6: o_seven_ten = D6;
+				7: o_seven_ten = D7;
+				8: o_seven_ten = D8;
+				9: o_seven_ten = D9;
+				default: o_seven_ten = DX;
+			endcase
+		end
+		else o_seven_ten = DX;
 		
 		case(i_hex % 10)
 			0: o_seven_one = D0;
@@ -51,7 +70,7 @@ module SevenHexDecoder(
 			7: o_seven_one = D7;
 			8: o_seven_one = D8;
 			9: o_seven_one = D9;
-			default: o_seven_one = D0;
+			default: o_seven_one = DX;
 		endcase
 	end
 endmodule

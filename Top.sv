@@ -29,14 +29,14 @@ module Top(
 
 	//next_state logic
 	always @(posedge i_clk) begin
+		counter_total <= counter_total + 1;
 		if (sw == 1) begin
 			if (run_num < SHOW_NUM) begin
 				if (counter < delay) begin
 					counter <= counter + 1;
-					counter_total <= counter_total + 1;
 				end
 				else begin
-					rdm <= (22695477 * counter_total + 1) % '1;
+					rdm <= (48271 * counter_total + 22695433 * rdm + 48271 * delay) % '1;
 					run_num <= run_num + 1;
 					counter <= 0;
 				end
@@ -45,19 +45,19 @@ module Top(
 			
 			//assign delay
 			if (run_num<5) begin
-				delay <= 37000000 - 8 * 9 * 9 * 50000;
+				delay <= 37123491 - 8 * 9 * 9 * 52039;
 			end
 			else if(run_num<9) begin
-				delay <= 37000000 - 7 * 7 * 8 * 50000;
+				delay <= 37298337 - 7 * 8 * 8 * 53948;
 			end
 			else if(run_num<12) begin
-				delay <= 37000000 - 6 * 6 * 7 * 50000;
+				delay <= 37123938 - 6 * 6 * 7 * 51232;
 			end
 			else if(run_num<14) begin
-				delay <= 37000000 - 5 * 5 * 6 * 50000;
+				delay <= 37304923 - 5 * 5 * 6 * 50192;
 			end
 			else begin
-				delay <= 35000000;
+				delay <= 37202932;
 			end
 		end
 		else begin
@@ -74,8 +74,8 @@ module Top(
 			if (run_num == SHOW_NUM && i_sw[17])
 				o_random_out = i_sw[16:10];
 			else begin
-				if(i_sw == 0)
-					o_random_out = rdm % 99 + 1;
+				if(i_sw[6:0] == 0)
+					o_random_out = rdm % 128 + 1;
 				else 
 					o_random_out = (rdm % i_sw[6:0]) + 1;
 			end
